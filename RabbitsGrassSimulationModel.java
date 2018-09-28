@@ -1,6 +1,7 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
+import uchicago.src.reflector.RangePropertyDescriptor;
 import uchicago.src.sim.analysis.DataSource;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
 import uchicago.src.sim.analysis.Sequence;
@@ -114,6 +115,14 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		graph = null;
 		graph = new OpenSequenceGraph("Rabbit Population", this);
 		this.registerMediaProducer("Plot", graph);
+		
+
+		String[] parameters = getInitParam();
+		
+		for(String p: parameters) {
+			RangePropertyDescriptor d = new RangePropertyDescriptor(p, 0, 100, 20);
+			descriptors.put(p, d);
+		}
 
 	}
 
@@ -137,7 +146,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	private void addNewAgent() {
-		// TODO Auto-generated method stub
 		RabbitsGrassSimulationAgent a = new RabbitsGrassSimulationAgent(rabbitEnergy);
 		agentList.add(a);
 		rgsSpace.addAgent(a);
@@ -204,9 +212,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		map.mapColor(1, Color.green);
 
 		Value2DDisplay displayGrass = new Value2DDisplay(rgsSpace.getCurrentGrassSpace(), map);
-
+		
 		Object2DDisplay displayAgents = new Object2DDisplay(rgsSpace.getCurrentAgentSpace());
-
 		displayAgents.setObjectList(agentList);
 
 		displaySurface.addDisplayableProbeable(displayGrass, "Grass");

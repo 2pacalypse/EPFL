@@ -58,6 +58,7 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 	}
 
 	public void step(int givenEnergy) {
+		energy--;
 
 		int oldX = x;
 		int oldY = y;
@@ -73,7 +74,6 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 			y = rgsSpace.getCurrentAgentSpace().ynorm(y - 1);
 		}
 
-		energy--;
 		if (rgsSpace.isCellOccupied(x, y)) {
 			x = oldX;
 			y = oldY;
