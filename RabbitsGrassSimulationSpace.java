@@ -37,7 +37,6 @@ public class RabbitsGrassSimulationSpace {
 	}
 
 	private int getGrassAt(int x, int y) {
-		// TODO Auto-generated method stub
 		int ret = 0;
 		if (grassSpace.getObjectAt(x, y) != null) {
 			ret = ((Integer) grassSpace.getObjectAt(x, y)).intValue();

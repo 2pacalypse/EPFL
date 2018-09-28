@@ -81,13 +81,12 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 
 			rgsSpace.getCurrentAgentSpace().putObjectAt(oldX, oldY, null);
 			rgsSpace.getCurrentAgentSpace().putObjectAt(x, y, this);
-
-			if (((int) (Integer) rgsSpace.getCurrentGrassSpace().getObjectAt(x, y)) == 1) {
-				energy += givenEnergy;
-				rgsSpace.getCurrentGrassSpace().putObjectAt(x, y, Integer.valueOf(0));
-				rgsSpace.setGrassCount(rgsSpace.getGrassCount() - 1);
-			}
-
+		}
+		
+		if (((int) (Integer) rgsSpace.getCurrentGrassSpace().getObjectAt(x, y)) == 1) {
+			energy += givenEnergy;
+			rgsSpace.getCurrentGrassSpace().putObjectAt(x, y, Integer.valueOf(0));
+			rgsSpace.setGrassCount(rgsSpace.getGrassCount() - 1);
 		}
 
 	}

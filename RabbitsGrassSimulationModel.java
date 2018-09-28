@@ -1,3 +1,6 @@
+
+
+
 import java.awt.Color;
 import java.util.ArrayList;
 
@@ -147,8 +150,11 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	private void addNewAgent() {
 		RabbitsGrassSimulationAgent a = new RabbitsGrassSimulationAgent(rabbitEnergy);
-		agentList.add(a);
-		rgsSpace.addAgent(a);
+		if(rgsSpace.addAgent(a)) {
+			agentList.add(a);	
+		}
+
+		
 	}
 
 	private void buildSchedule() {
@@ -201,7 +207,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				graph.step();
 			}
 		}
-		schedule.scheduleActionAtInterval(10, new GraphStep());
+		schedule.scheduleActionAtInterval(1, new GraphStep());
 	}
 
 	private void buildDisplay() {
@@ -222,6 +228,8 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		graph.addSequence("Rabbit Population", new RabbitPopulation(), OpenSequenceGraph.FILLED_CIRCLE);
 		graph.addSequence("Grass Population", new GrassPopulation(), OpenSequenceGraph.FILLED_CIRCLE);
 	}
+	
+	
 
 	public String[] getInitParam() {
 		return new String[] { "GridX", "GridY", "NumRabbits", "BirthThreshold", "GrassGrowthRate", "RabbitEnergy",
