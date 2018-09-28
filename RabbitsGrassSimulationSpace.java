@@ -10,6 +10,8 @@ public class RabbitsGrassSimulationSpace {
 	private Object2DTorus grassSpace;
 	private Object2DTorus agentSpace;
 	
+	private int grassCount = 0;
+	
 	public RabbitsGrassSimulationSpace(int xSize, int ySize) {
 		grassSpace = new Object2DTorus(xSize, ySize);
 		agentSpace = new Object2DTorus(xSize, ySize);
@@ -28,8 +30,11 @@ public class RabbitsGrassSimulationSpace {
 		for(int i = 0; i < limit; i++) {
 			int x = (int) (Math.random() * grassSpace.getSizeX());
 			int y = (int) (Math.random() * grassSpace.getSizeY());
+			if(getGrassAt(x,y) == 0) {
+				grassSpace.putObjectAt(x, y, Integer.valueOf(1));
+				grassCount++;
+			}
 			
-			grassSpace.putObjectAt(x, y, Integer.valueOf(1));
 		}
 	}
 	
@@ -76,6 +81,18 @@ public class RabbitsGrassSimulationSpace {
 	
 	public Object2DTorus getCurrentGrassSpace() {
 		return grassSpace;
+	}
+
+
+
+	public int getGrassCount() {
+		return grassCount;
+	}
+
+
+
+	public void setGrassCount(int grassCount) {
+		this.grassCount = grassCount;
 	}
 	
 }
