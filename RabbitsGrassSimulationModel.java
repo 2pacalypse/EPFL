@@ -29,11 +29,19 @@ import uchicago.src.sim.gui.Value2DDisplay;
  * @author 
  */
 
-/**
- * @author Murat
- *
- */
+
 public class RabbitsGrassSimulationModel extends SimModelImpl {
+
+	private RabbitsGrassSimulationSpace rgsSpace;
+	private ArrayList<RabbitsGrassSimulationAgent> agentList;
+	private Schedule schedule;
+	private DisplaySurface displaySurface;
+	private OpenSequenceGraph graph;
+
+
+	/*
+	 * Initial values
+	 */
 
 	private static final int GRIDX = 20;
 	private static final int GRIDY = 20;
@@ -42,6 +50,11 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private static final int GRASSGROWTHRATE = 20;
 	private static final int RABBITENERGY = 20;
 	private static final int GRASSENERGY = 20;
+
+
+	/*
+	 * Parameter variables
+	 */
 
 	private int gridX = GRIDX;
 	private int gridY = GRIDY;
@@ -52,15 +65,17 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private int rabbitEnergy = RABBITENERGY;
 	private int grassEnergy = GRASSENERGY;
 
-	private Schedule schedule;
 
-	private RabbitsGrassSimulationSpace rgsSpace;
+	public String[] getInitParam() {
+		return new String[] { "GridX", "GridY", "NumRabbits", "BirthThreshold", "GrassGrowthRate", "RabbitEnergy",
+		"GrassEnergy" };
+	}
 
-	private ArrayList<RabbitsGrassSimulationAgent> agentList;
 
-	private DisplaySurface displaySurface;
 
-	private OpenSequenceGraph graph;
+	/*
+	 * Inner classes to draw graph.
+	 */
 
 	class RabbitPopulation implements DataSource, Sequence {
 
@@ -122,10 +137,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		graph.setAxisTitles("Time", "Population");
 		graph.setSize(500, 500);
 		this.registerMediaProducer("Plot", graph);
-		
+
 
 		String[] parameters = getInitParam();
-		
+
 		for(String p: parameters) {
 			RangePropertyDescriptor d = new RangePropertyDescriptor(p, 0, 500, 100);
 			descriptors.put(p, d);
@@ -156,14 +171,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 	}
 
-	private void addNewAgent() {
-		RabbitsGrassSimulationAgent a = new RabbitsGrassSimulationAgent(rabbitEnergy);
-		if(rgsSpace.addAgent(a)) {
-			agentList.add(a);	
-		}
-
-		
-	}
 
 	private void buildSchedule() {
 		System.out.println("Running BuildSchedule");
@@ -172,33 +179,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 			@Override
 			public void execute() {
-
 				rgsSpace.growGrass(grassGrowthRate);
-				ArrayList<RabbitsGrassSimulationAgent> toBeDeleted = new ArrayList<RabbitsGrassSimulationAgent>();
-				ArrayList<RabbitsGrassSimulationAgent> toBeReproduced = new ArrayList<RabbitsGrassSimulationAgent>();
 
-				for (int i = 0; i < agentList.size(); i++) {
-					RabbitsGrassSimulationAgent rgsAgent = agentList.get(i);
-					rgsAgent.step(grassEnergy);
-
-					if (rgsAgent.getEnergy() <= 0) {
-						toBeDeleted.add(rgsAgent);
-					} else if (rgsAgent.getEnergy() >= birthThreshold) {
-						toBeReproduced.add(rgsAgent);
-					}
+				for (RabbitsGrassSimulationAgent agent : agentList) {
+					agent.move();
+					agent.eat(grassEnergy);
 
 				}
 
-				for (RabbitsGrassSimulationAgent a : toBeDeleted) {
-					agentList.remove(a);
-					rgsSpace.getCurrentAgentSpace().putObjectAt(a.getX(), a.getY(), null);
-				}
-
-				for (RabbitsGrassSimulationAgent a : toBeReproduced) {
-					a.setEnergy(a.getEnergy() / 2);
-					addNewAgent();
-
-				}
+				reapDeadAgents();
+				reproduceAgents();
 
 				displaySurface.updateDisplay();
 			}
@@ -212,7 +202,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				graph.step();
 			}
 		}
-		schedule.scheduleActionAtInterval(10, new GraphStep());
+		schedule.scheduleActionAtInterval(5, new GraphStep());
 	}
 
 	private void buildDisplay() {
@@ -223,7 +213,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		map.mapColor(1, Color.green);
 
 		Value2DDisplay displayGrass = new Value2DDisplay(rgsSpace.getCurrentGrassSpace(), map);
-		
+
 		Object2DDisplay displayAgents = new Object2DDisplay(rgsSpace.getCurrentAgentSpace());
 		displayAgents.setObjectList(agentList);
 
@@ -235,11 +225,59 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 	
 	
-
-	public String[] getInitParam() {
-		return new String[] { "GridX", "GridY", "NumRabbits", "BirthThreshold", "GrassGrowthRate", "RabbitEnergy",
-				"GrassEnergy" };
+	
+	private void addNewAgent() {
+		RabbitsGrassSimulationAgent a = new RabbitsGrassSimulationAgent(rabbitEnergy);
+		if(rgsSpace.addAgent(a)) {
+			agentList.add(a);	
+		}
 	}
+	
+	private void removeAgent(RabbitsGrassSimulationAgent a) {
+		agentList.remove(a);
+		rgsSpace.getCurrentAgentSpace().putObjectAt(a.getX(), a.getY(), null);
+	}
+
+
+	
+	private void reproduceAgents() {
+		ArrayList<RabbitsGrassSimulationAgent> toBeReproduced = new ArrayList<RabbitsGrassSimulationAgent>();
+		for(RabbitsGrassSimulationAgent agent : agentList) {
+			if (agent.getEnergy() >= birthThreshold) {
+				toBeReproduced.add(agent);
+			}
+		}
+
+		for (RabbitsGrassSimulationAgent a : toBeReproduced) {
+			a.setEnergy(a.getEnergy() / 2);
+			addNewAgent();
+
+		}
+
+	}
+
+	private void reapDeadAgents() {
+		ArrayList<RabbitsGrassSimulationAgent> toBeDeleted = new ArrayList<RabbitsGrassSimulationAgent>();
+		for(RabbitsGrassSimulationAgent agent : agentList) {
+			if (agent.getEnergy() <= 0) {
+				toBeDeleted.add(agent);
+			}
+		}
+
+		for (RabbitsGrassSimulationAgent a : toBeDeleted) {
+			removeAgent(a);
+		}
+
+	}
+	
+
+
+	/*******************************************************************************
+	 *
+	 * 	Getters and Setters
+	 *
+	 ******************************************************************************/
+
 
 	public Schedule getSchedule() {
 		return schedule;
