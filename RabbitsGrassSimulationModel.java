@@ -118,14 +118,16 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 			graph.dispose();
 		}
 		graph = null;
-		graph = new OpenSequenceGraph("Rabbit Population", this);
+		graph = new OpenSequenceGraph("Population Evolution", this);
+		graph.setAxisTitles("Time", "Population");
+		graph.setSize(500, 500);
 		this.registerMediaProducer("Plot", graph);
 		
 
 		String[] parameters = getInitParam();
 		
 		for(String p: parameters) {
-			RangePropertyDescriptor d = new RangePropertyDescriptor(p, 0, 100, 20);
+			RangePropertyDescriptor d = new RangePropertyDescriptor(p, 0, 500, 100);
 			descriptors.put(p, d);
 		}
 
@@ -133,7 +135,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	public void begin() {
 		if(gridX == 0 || gridY == 0) {
-			JOptionPane.showMessageDialog(null, "Grid must be positive. Terminating the program.");
+			JOptionPane.showMessageDialog(null, "Grid dimensions must be positive. Terminating the program.");
 			System.exit(0);
 		}
 		buildModel();
