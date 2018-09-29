@@ -4,6 +4,8 @@
 import java.awt.Color;
 import java.util.ArrayList;
 
+import javax.swing.JOptionPane;
+
 import uchicago.src.reflector.RangePropertyDescriptor;
 import uchicago.src.sim.analysis.DataSource;
 import uchicago.src.sim.analysis.OpenSequenceGraph;
@@ -130,6 +132,10 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	}
 
 	public void begin() {
+		if(gridX == 0 || gridY == 0) {
+			JOptionPane.showMessageDialog(null, "Grid must be positive. Terminating the program.");
+			System.exit(0);
+		}
 		buildModel();
 		buildSchedule();
 		buildDisplay();
@@ -188,10 +194,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 				for (RabbitsGrassSimulationAgent a : toBeReproduced) {
 					a.setEnergy(a.getEnergy() / 2);
-					RabbitsGrassSimulationAgent child = new RabbitsGrassSimulationAgent(rabbitEnergy);
-					if (rgsSpace.addAgent(child)) {
-						agentList.add(child);
-					}
+					addNewAgent();
 
 				}
 
@@ -207,7 +210,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 				graph.step();
 			}
 		}
-		schedule.scheduleActionAtInterval(1, new GraphStep());
+		schedule.scheduleActionAtInterval(10, new GraphStep());
 	}
 
 	private void buildDisplay() {

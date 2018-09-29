@@ -78,7 +78,6 @@ public class RabbitsGrassSimulationAgent implements Drawable {
 			x = oldX;
 			y = oldY;
 		} else {
-
 			rgsSpace.getCurrentAgentSpace().putObjectAt(oldX, oldY, null);
 			rgsSpace.getCurrentAgentSpace().putObjectAt(x, y, this);
 		}
