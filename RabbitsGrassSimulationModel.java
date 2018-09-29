@@ -81,6 +81,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		@Override
 		public double getSValue() {
+			System.out.println(agentList.size());
 			return agentList.size();
 		}
 
@@ -134,10 +135,11 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 		graph = null;
 		graph = new OpenSequenceGraph("Population Evolution", this);
+		graph.setSize(250, 250);
 		graph.setAxisTitles("Time", "Population");
-		graph.setSize(500, 500);
+		
 		this.registerMediaProducer("Plot", graph);
-
+		
 
 		String[] parameters = getInitParam();
 
@@ -174,11 +176,14 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 	private void buildSchedule() {
 		System.out.println("Running BuildSchedule");
+		
+
 
 		class RabbitsGrassSimulationStep extends BasicAction {
 
 			@Override
 			public void execute() {
+				graph.step();
 				rgsSpace.growGrass(grassGrowthRate);
 
 				for (RabbitsGrassSimulationAgent agent : agentList) {
@@ -196,13 +201,6 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 		schedule.scheduleActionBeginning(0, new RabbitsGrassSimulationStep());
 
-		class GraphStep extends BasicAction {
-			@Override
-			public void execute() {
-				graph.step();
-			}
-		}
-		schedule.scheduleActionAtInterval(5, new GraphStep());
 	}
 
 	private void buildDisplay() {
