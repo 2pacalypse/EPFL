@@ -81,7 +81,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		@Override
 		public double getSValue() {
-			System.out.println(agentList.size());
+			//System.out.println(agentList.size());
 			return agentList.size();
 		}
 
@@ -137,7 +137,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		graph = new OpenSequenceGraph("Population Evolution", this);
 		graph.setSize(250, 250);
 		graph.setAxisTitles("Time", "Population");
-		
+		graph.setXRange(0, 30);
 		this.registerMediaProducer("Plot", graph);
 		
 
@@ -177,7 +177,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 	private void buildSchedule() {
 		System.out.println("Running BuildSchedule");
 		
-
+		
 
 		class RabbitsGrassSimulationStep extends BasicAction {
 
@@ -214,7 +214,7 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 
 		Object2DDisplay displayAgents = new Object2DDisplay(rgsSpace.getCurrentAgentSpace());
 		displayAgents.setObjectList(agentList);
-
+		
 		displaySurface.addDisplayableProbeable(displayGrass, "Grass");
 		displaySurface.addDisplayableProbeable(displayAgents, "Agents");
 
@@ -247,8 +247,12 @@ public class RabbitsGrassSimulationModel extends SimModelImpl {
 		}
 
 		for (RabbitsGrassSimulationAgent a : toBeReproduced) {
-			a.setEnergy(a.getEnergy() / 2);
-			addNewAgent();
+			RabbitsGrassSimulationAgent child = new RabbitsGrassSimulationAgent(rabbitEnergy);
+			if(rgsSpace.addAgent(child)) {
+				agentList.add(child);	
+				a.setEnergy(a.getEnergy() / 2);
+			}
+			
 
 		}
 
